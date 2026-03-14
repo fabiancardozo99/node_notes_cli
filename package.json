@@ -1,0 +1,24 @@
+{
+  "name": "node_notes_cli",
+  "version": "1.0.0",
+  "description": "A command-line notes application built with Node.js to practice file storage, JSON persistence, and CRUD operations.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabiancardozo99/node_notes_cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/fabiancardozo99/node_notes_cli/issues"
+  },
+  "homepage": "https://github.com/fabiancardozo99/node_notes_cli#readme",
+  "dependencies": {
+    "chalk": "^5.6.2"
+  }
+}
