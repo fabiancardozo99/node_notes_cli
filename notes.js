@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "node:fs/promises";
 
 const NOTES_FILE = "./notes.json";
@@ -29,6 +30,10 @@ function generateId(notes) {
 }
 
 export async function createNote(text) {
+  if (!text?.trim() === "") {
+    throw new Error("ERROR: Can't add an empty note");
+  }
+
   const notes = await loadNotes();
 
   const newNote = {
@@ -41,8 +46,18 @@ export async function createNote(text) {
   await saveNotes(notes);
 }
 
-export function listNotes() {
-  console.log("Hello list");
+export async function listNotes() {
+  const notes = await loadNotes();
+
+  if (notes.length === 0) {
+    console.log(chalk.blue("There are no notes."));
+    return;
+  }
+
+  console.log(`NOTES (${notes.length}):`);
+  for (const note of notes) {
+    console.log(chalk.green(`${note.id}. ${note.text}`));
+  }
 }
 
 export function deleteNote(id) {
