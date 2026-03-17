@@ -44,6 +44,8 @@ export async function createNote(text) {
   notes.push(newNote);
 
   await saveNotes(notes);
+
+  console.log(chalk.green("Note added."));
 }
 
 export async function listNotes() {
@@ -60,10 +62,42 @@ export async function listNotes() {
   }
 }
 
-export function deleteNote(id) {
-  console.log(id);
+export async function deleteNote(id) {
+  id = Number(id);
+  if (isNaN(id)) {
+    console.error("ERROR: Not a valid id.");
+    return;
+  }
+
+  const notes = await loadNotes();
+
+  if (notes.length === 0) {
+    console.log(chalk.blue("There are no notes."));
+    return;
+  }
+
+  let indexToDelete = -1;
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].id === id) {
+      indexToDelete = i;
+      break;
+    }
+  }
+
+  if (indexToDelete === -1) {
+    console.log(chalk.red("ERROR: Note not found."));
+    return;
+  }
+
+  const { id: deletedId, text: deletedText } = notes[indexToDelete];
+
+  notes.splice(indexToDelete, 1);
+
+  await saveNotes(notes);
+
+  console.log(chalk.green(`Deleted note ${deletedId}: ${deletedText}`));
 }
 
-export function updateNote(id, note) {
+export async function updateNote(id, note) {
   console.log(`${id}) ${note}`);
 }
