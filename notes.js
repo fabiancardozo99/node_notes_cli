@@ -30,7 +30,7 @@ function generateId(notes) {
 }
 
 export async function createNote(text) {
-  if (!text?.trim() === "") {
+  if (!text?.trim()) {
     throw new Error("ERROR: Can't add an empty note");
   }
 
@@ -98,6 +98,41 @@ export async function deleteNote(id) {
   console.log(chalk.green(`Deleted note ${deletedId}: ${deletedText}`));
 }
 
-export async function updateNote(id, note) {
-  console.log(`${id}) ${note}`);
+export async function updateNote(id, text) {
+  id = Number(id);
+  if (isNaN(id)) {
+    console.error(chalk.red("ERROR: Not a valid id."));
+    return;
+  }
+
+  if (!text?.trim()) {
+    throw new Error("ERROR: Can't add an empty note");
+  }
+
+  const notes = await loadNotes();
+  if (notes.length === 0) {
+    console.log(chalk.blue("There are no notes."));
+    return;
+  }
+
+  let indexToChange = -1;
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].id === id) {
+      indexToChange = i;
+      break;
+    }
+  }
+
+  if (indexToChange === -1) {
+    console.log(chalk.blue("Note not found."));
+    return;
+  }
+
+  text = text.trim();
+
+  notes[indexToChange] = { id, text };
+
+  await saveNotes(notes);
+
+  console.log(chalk.green(`Note ${id} updated.`));
 }
