@@ -26,4 +26,7 @@ async function main() {
   await command(...args);
 }
 
-main();
+main().catch((error) => {
+  console.error(chalk.red(error.message));
+  process.exit(1);
+});

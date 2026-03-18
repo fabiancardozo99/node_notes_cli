@@ -8,12 +8,15 @@ export async function loadNotes() {
     const data = await fs.readFile(NOTES_FILE, "utf-8");
     return JSON.parse(data);
   } catch (error) {
-    return [];
+    if (error.code === "ENOENT") {
+      return [];
+    }
+    throw error;
   }
 }
 
-export async function saveNotes(udpatedNotes) {
-  const jsonData = JSON.stringify(udpatedNotes, null, 2);
+export async function saveNotes(updatedNotes) {
+  const jsonData = JSON.stringify(updatedNotes, null, 2);
   await fs.writeFile(NOTES_FILE, jsonData);
 }
 
@@ -31,10 +34,12 @@ function generateId(notes) {
 
 export async function createNote(text) {
   if (!text?.trim()) {
-    throw new Error("ERROR: Can't add an empty note");
+    throw new Error("Can't add an empty note");
   }
 
   const notes = await loadNotes();
+
+  text = text.trim();
 
   const newNote = {
     id: generateId(notes),
@@ -65,7 +70,7 @@ export async function listNotes() {
 export async function deleteNote(id) {
   id = Number(id);
   if (isNaN(id)) {
-    console.error("ERROR: Not a valid id.");
+    console.error(chalk.red("Not a valid id."));
     return;
   }
 
@@ -76,16 +81,10 @@ export async function deleteNote(id) {
     return;
   }
 
-  let indexToDelete = -1;
-  for (let i = 0; i < notes.length; i++) {
-    if (notes[i].id === id) {
-      indexToDelete = i;
-      break;
-    }
-  }
+  let indexToDelete = notes.findIndex((note) => note.id === id);
 
   if (indexToDelete === -1) {
-    console.log(chalk.red("ERROR: Note not found."));
+    console.log(chalk.red("Note not found."));
     return;
   }
 
@@ -101,12 +100,12 @@ export async function deleteNote(id) {
 export async function updateNote(id, text) {
   id = Number(id);
   if (isNaN(id)) {
-    console.error(chalk.red("ERROR: Not a valid id."));
+    console.error(chalk.red("Not a valid id."));
     return;
   }
 
   if (!text?.trim()) {
-    throw new Error("ERROR: Can't add an empty note");
+    throw new Error("Can't add an empty note");
   }
 
   const notes = await loadNotes();
@@ -115,13 +114,7 @@ export async function updateNote(id, text) {
     return;
   }
 
-  let indexToChange = -1;
-  for (let i = 0; i < notes.length; i++) {
-    if (notes[i].id === id) {
-      indexToChange = i;
-      break;
-    }
-  }
+  let indexToChange = notes.findIndex((note) => note.id === id);
 
   if (indexToChange === -1) {
     console.log(chalk.blue("Note not found."));
